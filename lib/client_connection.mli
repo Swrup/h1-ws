@@ -1,10 +1,10 @@
-module IOVec = Httpaf.IOVec
+module IOVec = H1.IOVec
 
 type t
 
 type error =
-  [ Httpaf.Client_connection.error
-  | `Handshake_failure of Httpaf.Response.t * [`read] Httpaf.Body.t ]
+  [ H1.Client_connection.error
+  | `Handshake_failure of H1.Response.t * H1.Body.Reader.t ]
 
 type input_handlers = Client_websocket.input_handlers =
   { frame : opcode:Websocket.Opcode.t -> is_fin:bool -> Bigstringaf.t -> off:int -> len:int -> unit

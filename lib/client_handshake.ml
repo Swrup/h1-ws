@@ -1,8 +1,8 @@
-module IOVec = Httpaf.IOVec
+module IOVec = H1.IOVec
 
 type t =
-  { connection : Httpaf.Client_connection.t
-  ; body       : [`write] Httpaf.Body.t }
+  { connection : H1.Client_connection.t
+  ; body       : H1.Body.Writer.t }
 
 let create
     ~nonce
@@ -18,11 +18,11 @@ let create
     ; "host"                 , String.concat ":" [ host; string_of_int port ]
     ; "sec-websocket-version", "13"
     ; "sec-websocket-key"    , nonce
-    ] |> Httpaf.Headers.of_list
+    ] |> H1.Headers.of_list
   in
   let body, connection =
-    Httpaf.Client_connection.request
-      (Httpaf.Request.create ~headers `GET resource)
+    H1.Client_connection.request
+      (H1.Request.create ~headers `GET resource)
       ~error_handler
       ~response_handler
   in
@@ -32,19 +32,19 @@ let create
 ;;
 
 let next_read_operation t =
-  Httpaf.Client_connection.next_read_operation t.connection
+  H1.Client_connection.next_read_operation t.connection
 
 let next_write_operation t =
-  Httpaf.Client_connection.next_write_operation t.connection
+  H1.Client_connection.next_write_operation t.connection
 
 let read t =
-  Httpaf.Client_connection.read t.connection
+  H1.Client_connection.read t.connection
 
 let report_write_result t =
-  Httpaf.Client_connection.report_write_result t.connection
+  H1.Client_connection.report_write_result t.connection
 
 let yield_writer t =
-  Httpaf.Client_connection.yield_writer t.connection
+  H1.Client_connection.yield_writer t.connection
 
 let close t =
-  Httpaf.Body.close_writer t.body
+  H1.Body.Writer.close t.body

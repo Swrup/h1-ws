@@ -1,9 +1,9 @@
 (executable
- (libraries websocketaf alcotest)
- (name test_websocketaf))
+ (libraries h1-ws alcotest)
+ (name test_h1_ws))
 
 (alias
  (name runtest)
- (package websocketaf)
- (deps (:test test_websocketaf.exe))
+ (package h1-ws)
+ (deps (:test test_h1_ws.exe))
  (action (run %{test})))

@@ -7,7 +7,7 @@ script: bash -ex ./.travis-docker.sh
 env:
   global:
   - DISTRO="ubuntu"
-  - PACKAGE="websocketaf"
+  - PACKAGE="h1-ws"
   - TESTS=true
   matrix:
   - OCAML_VERSION="4.07"

@@ -1,4 +1,4 @@
-module IOVec = Httpaf.IOVec
+module IOVec = H1.IOVec
 
 type mode =
   [ `Client of unit -> int32
