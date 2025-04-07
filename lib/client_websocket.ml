@@ -1,4 +1,4 @@
-module IOVec = Httpaf.IOVec
+module IOVec = H1.IOVec
 
 type t =
   { reader : [`Parse of string list * string] Reader.t

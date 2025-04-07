@@ -1,4 +1,4 @@
-module IOVec = Httpaf.IOVec
+module IOVec = H1.IOVec
 
 type state =
   | Uninitialized
@@ -8,17 +8,17 @@ type state =
 type t = state ref
 
 type error =
-  [ Httpaf.Client_connection.error
-  | `Handshake_failure of Httpaf.Response.t * [`read] Httpaf.Body.t ]
+  [ H1.Client_connection.error
+  | `Handshake_failure of H1.Response.t * H1.Body.Reader.t ]
 
 type input_handlers = Client_websocket.input_handlers =
   { frame : opcode:Websocket.Opcode.t -> is_fin:bool -> Bigstringaf.t -> off:int -> len:int -> unit
   ; eof   : unit                                                                            -> unit }
 
 let passes_scrutiny ~accept headers =
-  let upgrade              = Httpaf.Headers.get headers "upgrade"    in
-  let connection           = Httpaf.Headers.get headers "connection" in
-  let sec_websocket_accept = Httpaf.Headers.get headers "sec-websocket-accept" in
+  let upgrade              = H1.Headers.get headers "upgrade"    in
+  let connection           = H1.Headers.get headers "connection" in
+  let sec_websocket_accept = H1.Headers.get headers "sec-websocket-accept" in
   sec_websocket_accept = Some accept
   && (match upgrade with
      | None         -> false
@@ -47,9 +47,9 @@ let create
   let nonce = Base64.encode_exn nonce in
   let response_handler response response_body =
     let accept = sha1 (nonce ^ "258EAFA5-E914-47DA-95CA-C5AB0DC85B11") in
-    match response.Httpaf.Response.status with
+    match response.H1.Response.status with
     | `Switching_protocols when passes_scrutiny ~accept response.headers ->
-      Httpaf.Body.close_reader response_body;
+      H1.Body.Reader.close response_body;
       let handshake = handshake_exn t in
       t := Websocket (Client_websocket.create ~websocket_handler);
       Client_handshake.close handshake
@@ -57,7 +57,7 @@ let create
       error_handler (`Handshake_failure(response, response_body))
   in
   let handshake =
-    let error_handler = (error_handler :> Httpaf.Client_connection.error_handler) in
+    let error_handler = (error_handler :> H1.Client_connection.error_handler) in
     Client_handshake.create
       ~nonce
       ~host

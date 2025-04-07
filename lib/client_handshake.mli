@@ -1,4 +1,4 @@
-module IOVec = Httpaf.IOVec
+module IOVec = H1.IOVec
 
 type t
 
@@ -7,8 +7,8 @@ val create
   -> host             : string
   -> port             : int
   -> resource         : string
-  -> error_handler    : Httpaf.Client_connection.error_handler
-  -> response_handler : Httpaf.Client_connection.response_handler
+  -> error_handler    : H1.Client_connection.error_handler
+  -> response_handler : H1.Client_connection.response_handler
   -> t
 
 val next_read_operation  : t -> [ `Read | `Close ]

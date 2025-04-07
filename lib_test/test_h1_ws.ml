@@ -1,12 +1,12 @@
 module Websocket = struct
-  open Websocketaf.Websocket
+  open H1_ws.Websocket
 
   module Testable = struct
     let opcode = Alcotest.testable Opcode.pp_hum (=)
   end
 
   let parse_frame serialized_frame =
-    match Angstrom.parse_string Frame.parse serialized_frame with
+    match Angstrom.parse_string ~consume:All Frame.parse serialized_frame with
     | Ok frame -> frame
     | Error err -> Alcotest.fail err
 
@@ -43,6 +43,6 @@ module Websocket = struct
 end
 
 let () =
-  Alcotest.run "websocketaf unit tests"
+  Alcotest.run "h1-ws unit tests"
     [ "websocket", Websocket.tests
     ]

@@ -1,4 +1,4 @@
-module IOVec = Httpaf.IOVec
+module IOVec = H1.IOVec
 
 type mode =
   [ `Client of unit -> int32
@@ -31,26 +31,26 @@ let ready_to_write t =
 
 let schedule t ~kind payload ~off ~len =
   let mask = mask t in
-  Websocket.Frame.schedule_serialize t.faraday ?mask ~is_fin:true ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
+  Websocket.Frame.schedule_serialize t.faraday ~mask ~is_fin:true ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
   ready_to_write t
 
 let send_bytes t ~kind payload ~off ~len =
   let mask = mask t in
-  Websocket.Frame.schedule_serialize_bytes t.faraday ?mask ~is_fin:true ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
+  Websocket.Frame.schedule_serialize_bytes t.faraday ~mask ~is_fin:true ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
   ready_to_write t
 
 let send_ping t =
-  Websocket.Frame.serialize_control t.faraday ~opcode:`Ping;
+  Websocket.Frame.serialize_control t.faraday ~mask:None ~opcode:`Ping;
   ready_to_write t
 
 let send_pong t =
-  Websocket.Frame.serialize_control t.faraday ~opcode:`Pong;
+  Websocket.Frame.serialize_control t.faraday ~mask:None ~opcode:`Pong;
   ready_to_write t
 
 let flushed t f = Faraday.flush t.faraday f
 
 let close t =
-  Websocket.Frame.serialize_control t.faraday ~opcode:`Connection_close;
+  Websocket.Frame.serialize_control t.faraday ~mask:None ~opcode:`Connection_close;
   Faraday.close t.faraday;
   ready_to_write t
 
