@@ -3,17 +3,13 @@ module IOVec = H1.IOVec
 type state =
   | Uninitialized
   | Handshake of Client_handshake.t
-  | Websocket of Client_websocket.t
+  | Websocket of Websocket_connection.t
 
 type t = state ref
 
 type error =
   [ H1.Client_connection.error
   | `Handshake_failure of H1.Response.t * H1.Body.Reader.t ]
-
-type input_handlers = Client_websocket.input_handlers =
-  { frame : opcode:Websocket.Opcode.t -> is_fin:bool -> Bigstringaf.t -> off:int -> len:int -> unit
-  ; eof   : unit                                                                            -> unit }
 
 let passes_scrutiny ~accept headers =
   let upgrade              = H1.Headers.get headers "upgrade"    in
@@ -26,7 +22,6 @@ let passes_scrutiny ~accept headers =
   && (match connection with
      | None            -> false
      | Some connection -> String.lowercase_ascii connection = "upgrade")
-;;
 
 let handshake_exn t =
   match !t with
@@ -51,7 +46,9 @@ let create
     | `Switching_protocols when passes_scrutiny ~accept response.headers ->
       H1.Body.Reader.close response_body;
       let handshake = handshake_exn t in
-      t := Websocket (Client_websocket.create ~websocket_handler);
+      t := Websocket ( Websocket_connection.create ~mode:(`Client
+  (fun () -> Random.int32 Int32.max_int)
+    ) ~websocket_handler);
       Client_handshake.close handshake
     | _                    ->
       error_handler (`Handshake_failure(response, response_body))
@@ -68,53 +65,45 @@ let create
   in
   t := Handshake handshake;
   t
-;;
 
 let next_read_operation t =
   match !t with
   | Uninitialized       -> assert false
   | Handshake handshake -> Client_handshake.next_read_operation handshake
-  | Websocket websocket -> Client_websocket.next_read_operation websocket
-;;
+  | Websocket websocket -> Websocket_connection.next_read_operation websocket
 
 let read t bs ~off ~len =
   match !t with
   | Uninitialized       -> assert false
   | Handshake handshake -> Client_handshake.read handshake bs ~off ~len
-  | Websocket websocket -> Client_websocket.read websocket bs ~off ~len
-;;
+  | Websocket websocket -> Websocket_connection.read websocket bs ~off ~len
 
 let read_eof t bs ~off ~len =
   match !t with
   | Uninitialized       -> assert false
   | Handshake handshake -> Client_handshake.read handshake bs ~off ~len
-  | Websocket websocket -> Client_websocket.read_eof websocket bs ~off ~len
-;;
+  | Websocket websocket -> Websocket_connection.read_eof websocket bs ~off ~len
 
 let next_write_operation t =
   match !t with
   | Uninitialized       -> assert false
   | Handshake handshake -> Client_handshake.next_write_operation handshake
-  | Websocket websocket -> Client_websocket.next_write_operation websocket
-;;
+  | Websocket websocket -> Websocket_connection.next_write_operation websocket
 
 let report_write_result t result =
   match !t with
   | Uninitialized       -> assert false
   | Handshake handshake -> Client_handshake.report_write_result handshake result
-  | Websocket websocket -> Client_websocket.report_write_result websocket result
-;;
+  | Websocket websocket -> Websocket_connection.report_write_result websocket result
 
 let yield_writer t f =
   match !t with
   | Uninitialized       -> assert false
   | Handshake handshake -> Client_handshake.yield_writer handshake f
-  | Websocket websocket -> Client_websocket.yield_writer websocket f
-;;
+  | Websocket websocket -> Websocket_connection.yield_writer websocket f
 
 let close t =
   match !t with
   | Uninitialized       -> assert false
   | Handshake handshake -> Client_handshake.close handshake
-  | Websocket websocket -> Client_websocket.close websocket
-;;
+  | Websocket websocket -> Websocket_connection.close websocket

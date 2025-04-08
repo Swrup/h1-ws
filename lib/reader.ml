@@ -24,7 +24,6 @@ let create frame_handler =
   ; parse_state = Done
   ; closed      = false
   }
-;;
 
 let transition t state =
   match state with
@@ -46,7 +45,6 @@ and start t state =
     | AU.Partial { committed = 0; continue } ->
       t.parse_state <- Partial continue
     | _ -> assert false
-;;
 
 let next t =
   match t.parse_state with
@@ -56,7 +54,6 @@ let next t =
     else `Read
   | Fail    _ -> `Close
   | Partial _ -> `Read
-;;
 
 let rec read_with_more t bs ~off ~len more =
   let consumed =
@@ -73,4 +70,3 @@ let rec read_with_more t bs ~off ~len more =
   | Incomplete -> ()
   end;
   consumed
-;;

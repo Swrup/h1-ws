@@ -2,18 +2,10 @@ module IOVec = H1.IOVec
 
 type t
 
-type error =
-  [ H1.Client_connection.error
-  | `Handshake_failure of H1.Response.t * H1.Body.Reader.t ]
+type error = Websocket_connection.error
 
 val create
-  :  nonce             : string
-  -> host              : string
-  -> port              : int
-  -> resource          : string
-  -> sha1              : (string -> string)
-  -> error_handler     : (error -> unit)
-  -> websocket_handler : (Wsd.t -> Websocket_connection.input_handlers)
+  : websocket_handler : (Wsd.t -> Websocket_connection.input_handlers)
   -> t
 
 val next_read_operation  : t -> [ `Read | `Close ]
@@ -26,4 +18,5 @@ val report_write_result : t -> [`Ok of int | `Closed ] -> unit
 
 val yield_writer : t -> (unit -> unit) -> unit
 
+val is_closed : t -> bool
 val close : t -> unit
