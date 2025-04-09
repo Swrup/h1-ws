@@ -29,14 +29,14 @@ let ready_to_write t =
   t.when_ready_to_write <- default_ready_to_write;
   callback ()
 
-let schedule t ~kind payload ~off ~len =
+let schedule t ~kind ~is_fin payload ~off ~len =
   let mask = mask t in
-  Websocket.Frame.schedule_serialize t.faraday ~mask ~is_fin:true ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
+  Websocket.Frame.schedule_serialize t.faraday ~mask ~is_fin ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
   ready_to_write t
 
-let send_bytes t ~kind payload ~off ~len =
+let send_bytes t ~kind ~is_fin payload ~off ~len =
   let mask = mask t in
-  Websocket.Frame.schedule_serialize_bytes t.faraday ~mask ~is_fin:true ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
+  Websocket.Frame.schedule_serialize_bytes t.faraday ~mask ~is_fin ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
   ready_to_write t
 
 let send_ping t =

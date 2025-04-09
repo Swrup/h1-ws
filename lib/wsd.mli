@@ -5,7 +5,7 @@ type mode =
   | `Server
   ]
 
-type t 
+type t
 
 val create
   : mode
@@ -14,6 +14,7 @@ val create
 val schedule
   :  t
   -> kind:[ `Text | `Binary ]
+  -> is_fin:bool
   -> Bigstringaf.t
   -> off:int
   -> len:int
@@ -22,6 +23,7 @@ val schedule
 val send_bytes
   :  t
   -> kind:[ `Text | `Binary ]
+  -> is_fin:bool
   -> Bytes.t
   -> off:int
   -> len:int
