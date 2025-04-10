@@ -13,7 +13,7 @@ val create
 
 val schedule
   :  t
-  -> kind:[ `Text | `Binary ]
+  -> kind:Websocket.Opcode.standard_non_control
   -> is_fin:bool
   -> Bigstringaf.t
   -> off:int
@@ -22,7 +22,7 @@ val schedule
 
 val send_bytes
   :  t
-  -> kind:[ `Text | `Binary ]
+  -> kind:Websocket.Opcode.standard_non_control
   -> is_fin:bool
   -> Bytes.t
   -> off:int

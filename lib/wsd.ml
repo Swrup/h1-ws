@@ -30,13 +30,15 @@ let ready_to_write t =
   callback ()
 
 let schedule t ~kind ~is_fin payload ~off ~len =
+  let opcode :> Websocket.Opcode.t = kind in
   let mask = mask t in
-  Websocket.Frame.schedule_serialize t.faraday ~mask ~is_fin ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
+  Websocket.Frame.schedule_serialize t.faraday ~mask ~is_fin ~opcode ~payload ~off ~len;
   ready_to_write t
 
 let send_bytes t ~kind ~is_fin payload ~off ~len =
+  let opcode :> Websocket.Opcode.t = kind in
   let mask = mask t in
-  Websocket.Frame.schedule_serialize_bytes t.faraday ~mask ~is_fin ~opcode:(kind :> Websocket.Opcode.t) ~payload ~off ~len;
+  Websocket.Frame.schedule_serialize_bytes t.faraday ~mask ~is_fin ~opcode ~payload ~off ~len;
   ready_to_write t
 
 let send_ping t =
