@@ -61,8 +61,22 @@ module Opcode = struct
   let of_int = of_code
   let of_int_exn = of_code_exn
 
-  let pp_hum fmt t =
-    Format.fprintf fmt "%d" (to_int t)
+let pp_hum fmt = function
+  | `Continuation ->
+    Format.fprintf fmt "`Continuation"
+  | `Text ->
+    Format.fprintf fmt "`Text"
+  | `Binary ->
+    Format.fprintf fmt "`Binary"
+  | `Connection_close ->
+    Format.fprintf fmt "`Connection_close"
+  | `Ping ->
+    Format.fprintf fmt "`Ping"
+  | `Pong ->
+    Format.fprintf fmt "`Pong"
+  | `Other code ->
+    Format.fprintf fmt "`Other %#x" code
+
 end
 
 module Close_code = struct
