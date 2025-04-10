@@ -13,7 +13,7 @@ val create
   -> resource          : string
   -> sha1              : (string -> string)
   -> error_handler     : (error -> unit)
-  -> websocket_handler : (Wsd.t -> Websocket_connection.input_handlers)
+  -> websocket_handler : (Wsd.t -> Websocket.input_handlers)
   -> t
 
 val next_read_operation  : t -> [ `Read | `Close ]

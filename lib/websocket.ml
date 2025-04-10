@@ -346,3 +346,10 @@ module Frame = struct
     Faraday.write_bytes faraday payload ~off ~len;
   ;;
 end
+
+type frame_handler =
+  opcode:Opcode.t -> is_fin:bool -> Bigstringaf.t -> off:int -> len:int -> unit
+
+type input_handlers =
+  { frame_handler : frame_handler
+  ; eof   : unit -> unit }

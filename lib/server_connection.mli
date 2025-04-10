@@ -2,10 +2,10 @@ module IOVec = H1.IOVec
 
 type t
 
-type error = Websocket_connection.error
+type error = [ `Exn of exn ]
 
 val create
-  : websocket_handler : (Wsd.t -> Websocket_connection.input_handlers)
+  : websocket_handler : (Wsd.t -> Websocket.input_handlers)
   -> t
 
 val next_read_operation  : t -> [ `Read | `Close ]

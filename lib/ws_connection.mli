@@ -2,17 +2,8 @@ module IOVec = H1.IOVec
 
 type t
 
-type error = [ `Exn of exn ]
-
-type frame_handler =
-    opcode:Websocket.Opcode.t -> is_fin:bool -> Bigstringaf.t -> off:int -> len:int -> unit
-
-type input_handlers =
-  { frame_handler : frame_handler
-  ; eof   : unit -> unit }
-
 val create
-  :  mode:Wsd.mode -> websocket_handler : (Wsd.t -> input_handlers)
+  :  mode:Wsd.mode -> websocket_handler : (Wsd.t -> Websocket.input_handlers)
   -> t
 
 val next_read_operation  : t -> [ `Read | `Close ]

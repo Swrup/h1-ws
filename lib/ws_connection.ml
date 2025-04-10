@@ -1,14 +1,5 @@
 module IOVec = H1.IOVec
 
-type error = [ `Exn of exn ]
-
-type frame_handler =
-    opcode:Websocket.Opcode.t -> is_fin:bool -> Bigstringaf.t -> off:int -> len:int -> unit
-
-type input_handlers =
-  { frame_handler : frame_handler
-  ; eof   : unit -> unit }
-
 type t =
   { wsd    : Wsd.t
   ; reader : [`Parse of string list * string] Reader.t
@@ -17,7 +8,7 @@ type t =
 
 let create ~mode ~websocket_handler =
   let wsd          = Wsd.create mode in
-  let { frame_handler; eof } = websocket_handler wsd in
+  let Websocket.{ frame_handler; eof } = websocket_handler wsd in
   { wsd
   ; reader = Reader.create frame_handler
   ; eof
