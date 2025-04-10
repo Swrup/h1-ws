@@ -2,7 +2,7 @@ module Websocket = struct
   open H1_ws.Websocket
 
   module Testable = struct
-    let opcode = Alcotest.testable Opcode.pp_hum (=)
+    let opcode = Alcotest.testable Opcode.pp_hum ( = )
   end
 
   let parse_frame serialized_frame =
@@ -20,12 +20,16 @@ module Websocket = struct
 
   let test_parsing_close_frame () =
     let frame = parse_frame "\136\000" in
-    Alcotest.check Testable.opcode "opcode" `Connection_close (Frame.opcode frame);
+    Alcotest.check Testable.opcode "opcode" `Connection_close
+      (Frame.opcode frame);
     Alcotest.(check int) "payload_length" (Frame.payload_length frame) 0;
     Alcotest.(check int) "length" (Frame.length frame) 2
 
   let test_parsing_text_frame () =
-    let frame = parse_frame "\129\139\086\057\046\216\103\011\029\236\099\015\025\224\111\009\036" in
+    let frame =
+      parse_frame
+        "\129\139\086\057\046\216\103\011\029\236\099\015\025\224\111\009\036"
+    in
     Alcotest.check Testable.opcode "opcode" `Text (Frame.opcode frame);
     Alcotest.(check bool) "has mask" true (Frame.has_mask frame);
     Alcotest.(check int32) "mask" 1446588120l (Frame.mask_exn frame);
@@ -36,13 +40,11 @@ module Websocket = struct
     Alcotest.(check string) "payload" "1234567890\n" payload
 
   let tests =
-    [ "parsing ping frame",  `Quick, test_parsing_ping_frame
-    ; "parsing close frame", `Quick, test_parsing_close_frame
-    ; "parsing text frame",  `Quick, test_parsing_text_frame
+    [
+      ("parsing ping frame", `Quick, test_parsing_ping_frame);
+      ("parsing close frame", `Quick, test_parsing_close_frame);
+      ("parsing text frame", `Quick, test_parsing_text_frame);
     ]
 end
 
-let () =
-  Alcotest.run "h1-ws unit tests"
-    [ "websocket", Websocket.tests
-    ]
+let () = Alcotest.run "h1-ws unit tests" [ ("websocket", Websocket.tests) ]

@@ -1,43 +1,33 @@
 module IOVec = H1.IOVec
 
-type mode =
-  [ `Client of unit -> int32
-  | `Server
-  ]
-
+type mode = [ `Client of unit -> int32 | `Server ]
 type t
 
-val create
-  : mode
-  -> t
+val create : mode -> t
 
-val schedule
-  :  t
-  -> kind:Websocket.Opcode.standard_non_control
-  -> is_fin:bool
-  -> Bigstringaf.t
-  -> off:int
-  -> len:int
-  -> unit
+val schedule :
+  t ->
+  kind:Websocket.Opcode.standard_non_control ->
+  is_fin:bool ->
+  Bigstringaf.t ->
+  off:int ->
+  len:int ->
+  unit
 
-val send_bytes
-  :  t
-  -> kind:Websocket.Opcode.standard_non_control
-  -> is_fin:bool
-  -> Bytes.t
-  -> off:int
-  -> len:int
-  -> unit
+val send_bytes :
+  t ->
+  kind:Websocket.Opcode.standard_non_control ->
+  is_fin:bool ->
+  Bytes.t ->
+  off:int ->
+  len:int ->
+  unit
 
 val send_ping : t -> unit
 val send_pong : t -> unit
-
 val flushed : t -> (unit -> unit) -> unit
-val close   : t -> unit
-
+val close : t -> unit
 val next : t -> [ `Write of Bigstringaf.t IOVec.t list | `Yield | `Close of int ]
-val report_result : t -> [`Ok of int | `Closed ] -> unit
-
+val report_result : t -> [ `Ok of int | `Closed ] -> unit
 val is_closed : t -> bool
-
 val when_ready_to_write : t -> (unit -> unit) -> unit

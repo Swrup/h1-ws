@@ -1,6 +1,6 @@
 (library
  (name h1_ws)
-  (public_name h1-ws)
-  (libraries
-    base64 angstrom faraday h1 result)
-  (flags (:standard -safe-string)))
+ (public_name h1-ws)
+ (libraries base64 angstrom faraday h1 result)
+ (flags
+  (:standard -safe-string)))
